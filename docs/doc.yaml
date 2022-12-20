@@ -126,9 +126,6 @@ components:
     registerUser:
       type: object
       properties:
-        id:
-          type: integer
-          example: 4
         name:
           type: string
           example: Camilo
@@ -142,7 +139,6 @@ components:
           type: string
           example: 12345asd
       requerid:
-        - id
         - name
         - lastName
         - email
@@ -164,9 +160,6 @@ components:
     createNotification:
       type: object
       properties:
-        id:
-          type: integer
-          example: 4
         title:
           type: string
           example:
@@ -185,6 +178,10 @@ components:
         time:
           type: Date
           example: tiempo en el cual se va a ejecutar o no puede llevar tiempo para ejecutarse en ese instante
+        date:
+          type: array number
+          example: [0, 2, 4, 5]
+
       requerid:
         - title
         - description
@@ -193,7 +190,7 @@ components:
       type: object
       properties:
         id:
-          type: integer
+          type: string
           example: 4
       requerid:
         - id

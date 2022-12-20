@@ -1,15 +1,15 @@
 import { app } from './app';
 import admin from 'firebase-admin';
 import dotenv from 'dotenv';
-import { applicationDefault } from 'firebase-admin/app';
+import { configCredential } from './config/config';
 
 dotenv.config();
 
 const port: number = Number(process.env.PORT);
-const service = require(`${__dirname}${process.env.DIR_FIREBASE_KEY}`);
+// const service = require(`${__dirname}${process.env.DIR_FIREBASE_KEY}`);
 
 admin.initializeApp({
-  credential: admin.credential.cert(service),
+  credential: admin.credential.cert(configCredential),
 });
 
 async function connect() {
