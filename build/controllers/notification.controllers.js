@@ -35,7 +35,7 @@ exports.getNotifications = getNotifications;
 function createNotifications(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            let { title, body, img, orientation, state, time } = req.body;
+            let { title, body, img, orientation, state, time, days, } = req.body;
             if (!title)
                 return next(new errorHandle_1.createError(404, 'el campo title es obligatorio'));
             if (!body)
@@ -49,6 +49,7 @@ function createNotifications(req, res, next) {
                 orientation: optionNotification_1.EOrientation[orientation || 'none'],
                 state: optionNotification_1.EState[state || 'complete'],
                 time: time || new Date(),
+                days,
             };
             const notificationRef = __1.db
                 .collection('user')

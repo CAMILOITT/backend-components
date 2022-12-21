@@ -16,11 +16,11 @@ exports.dbMessage = exports.dbAuth = exports.db = void 0;
 const app_1 = require("./app");
 const firebase_admin_1 = __importDefault(require("firebase-admin"));
 const dotenv_1 = __importDefault(require("dotenv"));
+const config_1 = require("./config/config");
 dotenv_1.default.config();
-const port = Number(process.env.PORT);
-const service = require(`${__dirname}${process.env.DIR_FIREBASE_KEY}`);
+const port = Number(config_1.environmentType.port);
 firebase_admin_1.default.initializeApp({
-    credential: firebase_admin_1.default.credential.cert(service),
+    credential: firebase_admin_1.default.credential.cert(config_1.environmentType.configFirebase),
 });
 function connect() {
     return __awaiter(this, void 0, void 0, function* () {

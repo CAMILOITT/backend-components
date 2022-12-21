@@ -7,8 +7,11 @@ exports.sendRecurrent = exports.sendProgrammer = exports.sendNow = void 0;
 const node_cron_1 = __importDefault(require("node-cron"));
 const sendNotification_1 = require("./sendNotification");
 const configNotification_1 = require("./configNotification");
-function sendNow(time, title, body, orientation, img) {
-    const message = (0, configNotification_1.configurationNotification)(title, body, orientation, img);
+function sendNow(title, body, orientation, img) {
+    const configDevice = (0, configNotification_1.configurationNotification)(title, body, orientation, img);
+    const message = {
+        configDevice,
+    };
     (0, sendNotification_1.sendMessage)(message);
 }
 exports.sendNow = sendNow;
@@ -26,11 +29,12 @@ function sendProgrammer(time, title, body, orientation, img) {
 exports.sendProgrammer = sendProgrammer;
 function sendRecurrent(time, dayWeek, title, body, orientation, img) {
     const message = (0, configNotification_1.configurationNotification)(title, body, orientation, img);
+    const days = dayWeek.join(',');
     const dayMonth = time.getDate() || '*';
     const minute = time.getSeconds() || '*';
     const month = time.getMonth() || '*';
     const hour = time.getHours() || '*';
-    node_cron_1.default.schedule(`${minute} ${hour} ${dayMonth} ${month} ${dayWeek}`, () => {
+    node_cron_1.default.schedule(`${minute} ${hour} ${dayMonth} ${month} ${days}`, () => {
         (0, sendNotification_1.sendMessage)(message);
     });
 }

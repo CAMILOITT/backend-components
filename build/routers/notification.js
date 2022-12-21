@@ -6,7 +6,7 @@ const notification_controllers_1 = require("../controllers/notification.controll
 const token_1 = require("../middleware/token");
 const notificationRouter = (0, express_1.Router)();
 exports.notificationRouter = notificationRouter;
-notificationRouter.get('/notifications', token_1.isAuthenticate, notification_controllers_1.getNotifications);
+notificationRouter.get('/notifications', /* isAuthenticate, */ notification_controllers_1.getNotifications);
 notificationRouter.post('/notification', token_1.isAuthenticate, notification_controllers_1.createNotifications);
 notificationRouter.put('/notification/:id', token_1.isAuthenticate, notification_controllers_1.updateNotifications);
 notificationRouter.delete('/notification/:id', token_1.isAuthenticate, notification_controllers_1.deleteNotifications);
