@@ -1,15 +1,24 @@
 import dotenv from 'dotenv';
+import { IConfigEnvironment } from '../interfaces/config.interfaces';
 
 dotenv.config();
 
 const config = {
-  development: {
+  undefined: {
+    configFirebase: {
+      projectId: '',
+      clientEmail: '',
+      privateKey: '',
+    },
+    port: -1000,
+  },
+  dev: {
     configFirebase: {
       projectId: process.env.DEV_projectId,
       clientEmail: process.env.DEV_clientEmail,
       privateKey: process.env.DEV_privateKey,
     },
-    port: process.env.PORT || 3000,
+    port: Number(process.env.PORT) || 3000,
   },
   test: {
     configFirebase: {
@@ -17,7 +26,7 @@ const config = {
       clientEmail: process.env.TEST_clientEmail,
       privateKey: process.env.TEST_privateKey,
     },
-    port: process.env.PORT || 3000,
+    port: Number(process.env.PORT) || 3000,
   },
   production: {
     configFirebase: {
@@ -25,18 +34,13 @@ const config = {
       clientEmail: process.env.PROD_clientEmail,
       privateKey: process.env.PROD_privateKey,
     },
-    port: process.env.PORT || 3000,
+    port: Number(process.env.PORT) || 3000,
   },
 };
 
-const statusCode = process.env.NODE_DEV;
-
-let configCredential: {};
-
-if (statusCode === 'development') configCredential = config.development;
-
-if (statusCode === 'production') configCredential = config.production;
-
-if (statusCode === 'test') configCredential = config.test;
-
-export { configCredential };
+export const environmentType: IConfigEnvironment =
+  process.env.NODE_ENV === 'dev' ||
+  process.env.NODE_ENV === 'test' ||
+  process.env.NODE_ENV === 'production'
+    ? config[process.env.NODE_ENV]
+    : config.undefined;

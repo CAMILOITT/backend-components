@@ -3,7 +3,7 @@ import { db, dbMessage } from '..';
 import { createError } from '../middleware/errorHandle';
 import { exist, listItem } from '../utils/firebase/object';
 import { EOrientation, EState } from '../enum/optionNotification';
-import { IStructureMessage } from '../interfaces/dataNotification';
+import { IStructureMessage } from '../interfaces/dataNotification.interfaces';
 
 export async function getNotifications(
   req: Request,

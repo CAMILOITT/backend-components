@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import * as bcrypt from 'bcryptjs';
 import { createError } from '../middleware/errorHandle';
 import { db, dbAuth } from '..';
-import { IUser } from '../interfaces/dataNotification';
+import { IUser } from '../interfaces/dataNotification.interfaces';
 
 export async function register(
   req: Request,

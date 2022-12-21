@@ -7,7 +7,7 @@ export interface IStructureMessage {
   orientation: EOrientation;
   state: EState;
   time: Date;
-  days: number[]
+  days: number[];
 }
 
 export interface IUser {

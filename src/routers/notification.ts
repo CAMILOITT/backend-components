@@ -11,7 +11,7 @@ import { isAuthenticate } from '../middleware/token';
 
 const notificationRouter = Router();
 
-notificationRouter.get('/notifications', isAuthenticate, getNotifications);
+notificationRouter.get('/notifications', /* isAuthenticate, */ getNotifications);
 
 notificationRouter.post('/notification', isAuthenticate, createNotifications);
 
