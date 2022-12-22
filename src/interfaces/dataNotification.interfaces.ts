@@ -1,9 +1,9 @@
 import { EOrientation, EState } from '../enum/optionNotification';
 
-export interface IStructureMessage {
+export interface IStructureTableNotification {
   title: string;
   body: string;
-  img: string;
+  imageUrl: string;
   orientation: EOrientation;
   state: EState;
   time: Date;

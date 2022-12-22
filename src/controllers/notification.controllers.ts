@@ -3,7 +3,9 @@ import { db, dbMessage } from '..';
 import { createError } from '../middleware/errorHandle';
 import { exist, listItem } from '../utils/firebase/object';
 import { EOrientation, EState } from '../enum/optionNotification';
-import { IStructureMessage } from '../interfaces/dataNotification.interfaces';
+import { IStructureTableNotification } from '../interfaces/dataNotification.interfaces';
+import { sendNow } from '../middleware/notification/notificationProgrammer';
+import { escape } from 'querystring';
 
 export async function getNotifications(
   req: Request,
@@ -12,8 +14,8 @@ export async function getNotifications(
 ) {
   try {
     const notificationRef = db
-      .collection('user')
-      .doc(`${req.headers['name']}`)
+      .collection('users')
+      .doc(`${req.headers['x-uid-fs']}`)
       .collection('notification');
 
     const listNotification = await notificationRef.get().then(listItem);
@@ -36,12 +38,14 @@ export async function createNotifications(
     let {
       title,
       body,
-      img,
+      imageUrl,
       orientation,
       state,
       time,
       days,
-    }: IStructureMessage = req.body;
+    }: IStructureTableNotification = req.body;
+
+    console.log(title, body, imageUrl, orientation, state, time, days);
 
     if (!title)
       return next(new createError(404, 'el campo title es obligatorio'));
@@ -49,30 +53,35 @@ export async function createNotifications(
     if (!body)
       return next(new createError(404, 'el campo body es obligatorio'));
 
-    if (!img) img = '';
+    if (!imageUrl) imageUrl = '';
 
     const dataNotification = {
       title,
       body,
-      img,
+      imageUrl,
       orientation: EOrientation[orientation || 'none'],
-      state: EState[state || 'complete'],
+      state: EState[state|| 'complete'],
       time: time || new Date(),
-      days,
+      days: days || '*',
     };
 
+    console.log(req.headers['x-uid-fs']);
+
     const notificationRef = db
-      .collection('user')
-      .doc(`${req.headers['name']}`)
+      .collection('users')
+      .doc(`${req.headers['x-uid-fs']}`)
       .collection('notification')
       .doc();
 
     await notificationRef.set(dataNotification);
 
+    // if (dataNotification.state === EState['complete']) {
+    //   sendNow(dataNotification);
+    // }
+
     res.status(200).json('notificación creada correctamente');
-  } catch (error) {
-    console.log(error);
-    return next(new createError());
+  } catch (err: any) {
+    return next(new createError(0, err.message));
   }
 }
 
@@ -83,7 +92,7 @@ export async function updateNotifications(
 ) {
   try {
     const notificationRef = db
-      .collection('user')
+      .collection('users')
       .doc(`${req.headers['name']}`)
       .collection('notification');
 
@@ -166,15 +175,15 @@ export async function unsubscribeNotification(
     const token = req.header['name'];
     if (!topic) {
       return next(
-        new createError(404, 'ingrese el tema al cual quiere subscribirse')
+        new createError(404, 'ingrese el tema al cual quiere desuscribirse')
       );
     }
 
     if (!token) {
-      return next(new createError(404, 'no tiene permisos para inscribirse'));
+      return next(new createError(404, 'no tiene permisos para desuscribirse'));
     }
 
-    dbMessage.unsubscribeFromTopic(token, topic);
+    await dbMessage.unsubscribeFromTopic(token, topic);
 
     return res.status(400).json('subscripción cancelada');
   } catch (err: any) {

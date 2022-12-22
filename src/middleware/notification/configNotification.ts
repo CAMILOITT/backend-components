@@ -1,11 +1,11 @@
 import { EOrientation } from '../../enum/optionNotification';
+import { IStructureTableNotification } from '../../interfaces/dataNotification.interfaces';
 
 export function configurationNotification(
-  title: string,
-  body: string,
-  orientation: number,
-  imageUrl?: string
+  dataTable: IStructureTableNotification
 ) {
+  const { title, body,  imageUrl } = dataTable;
+
   let config = {};
 
   const notification = {
@@ -15,15 +15,15 @@ export function configurationNotification(
   };
 
   if (imageUrl === '') {
-    if (EOrientation[orientation] === EOrientation[0]) {
+    if (dataTable.orientation === EOrientation['none']) {
       config = {
         webpush: { notification },
       };
-    } else if (EOrientation[orientation] === EOrientation[1]) {
+    } else if (dataTable.orientation === EOrientation['android']) {
       config = {
         android: { notification },
       };
-    } else if (EOrientation[orientation] === EOrientation[2]) {
+    } else if (dataTable.orientation === EOrientation['IOS']) {
       config: {
         apns: {
           payload: notification;
@@ -33,15 +33,15 @@ export function configurationNotification(
       config = { notification };
     }
   } else {
-    if (EOrientation[orientation] === EOrientation[0]) {
+    if (dataTable.orientation === EOrientation['none']) {
       config = {
         webpush: { notification: { title, body } },
       };
-    } else if (EOrientation[orientation] === EOrientation[1]) {
+    } else if (dataTable.orientation === EOrientation['android']) {
       config = {
         android: { notification: { title, body } },
       };
-    } else if (EOrientation[orientation] === EOrientation[2]) {
+    } else if (dataTable.orientation === EOrientation['IOS']) {
       config = {
         apns: { payload: { title, body } },
       };
@@ -51,5 +51,6 @@ export function configurationNotification(
       };
     }
   }
+
   return config;
 }

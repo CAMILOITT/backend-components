@@ -1,55 +1,38 @@
 import cron from 'node-cron';
 import { sendMessage } from './sendNotification';
-import { configurationNotification } from './configNotification';
+import {  configurationNotification } from './configNotification';
+import { IStructureTableNotification } from '../../interfaces/dataNotification.interfaces';
 
-export function sendNow(
-  title: string,
-  body: string,
-  orientation: number,
-  img?: string
-) {
-  const configDevice = configurationNotification(title, body, orientation, img);
+export function sendNow(dataTable: IStructureTableNotification) {
+  const configDevice = configurationNotification(dataTable);
   const message = {
     configDevice,
   };
   sendMessage(message);
 }
 
-export function sendProgrammer(
-  time: Date,
-  title: string,
-  body: string,
-  orientation: number,
-  img?: string
-) {
-  const message = configurationNotification(title, body, orientation, img);
+export function sendProgrammer(dataTable: IStructureTableNotification) {
+  const message = configurationNotification(dataTable);
 
-  const dayMonth: number | string = time.getDate() || '*';
-  const dayWeek: number | string = time.getDate() || '*';
-  const minute: number | string = time.getSeconds() || '*';
-  const month: number | string = time.getMonth() || '*';
-  const hour: number | string = time.getHours() || '*';
+  const dayMonth: number | string = dataTable.time.getDate() || '*';
+  const dayWeek: number | string = dataTable.time.getDate() || '*';
+  const minute: number | string = dataTable.time.getSeconds() || '*';
+  const month: number | string = dataTable.time.getMonth() || '*';
+  const hour: number | string = dataTable.time.getHours() || '*';
   cron.schedule(`${minute} ${hour} ${dayMonth} ${month} ${dayWeek}`, () => {
     sendMessage(message);
   });
 }
 
-export function sendRecurrent(
-  time: Date,
-  dayWeek: number[],
-  title: string,
-  body: string,
-  orientation: number,
-  img?: string
-) {
-  const message = configurationNotification(title, body, orientation, img);
+export function sendRecurrent(dataTable: IStructureTableNotification) {
+  const message = configurationNotification(dataTable);
 
-  const days = dayWeek.join(',');
+  const days = dataTable.days.join(',');
 
-  const dayMonth: number | string = time.getDate() || '*';
-  const minute: number | string = time.getSeconds() || '*';
-  const month: number | string = time.getMonth() || '*';
-  const hour: number | string = time.getHours() || '*';
+  const dayMonth: number | string = dataTable.time.getDate() || '*';
+  const minute: number | string = dataTable.time.getSeconds() || '*';
+  const month: number | string = dataTable.time.getMonth() || '*';
+  const hour: number | string = dataTable.time.getHours() || '*';
 
   cron.schedule(`${minute} ${hour} ${dayMonth} ${month} ${days}`, () => {
     sendMessage(message);

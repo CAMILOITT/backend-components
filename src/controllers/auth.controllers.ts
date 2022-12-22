@@ -32,7 +32,7 @@ export async function register(
 
     const newUser = await dbAuth.createUser(information);
 
-    const newUserTable = db.collection('user').doc(newUser.uid);
+    const newUserTable = db.collection('users').doc(newUser.uid);
 
     await newUserTable.set(information);
 
@@ -45,28 +45,28 @@ export async function register(
 
 export async function login(req: Request, res: Response, next: NextFunction) {
   try {
-    const { email, password } = req.body;
+    const { token, userUid } = req.body;
 
-    const userExist = await dbAuth.getUserByEmail(email);
-
-    if (!userExist) return next(new createError(404, 'usuario no encontrado'));
-
-    const user = (await db.collection('user').doc(userExist.uid).get()).data();
-
-    if (!user) return next(new createError(404, 'usuario no encontrado'));
-
-    const passwordCorrect = await bcrypt.compare(password, user.password);
-
-    if (!passwordCorrect)
-      return next(new createError(400, 'correo o contraseña no es correcta'));
-
-    console.log(userExist.uid);
+    if (!token) return next(new createError(401, 'no esta autorizado'));
+    if (!userUid) return next(new createError(401, 'no esta autorizado'));
 
     return res
       .status(200)
-      .header({ user: userExist.uid })
-      .json(`bienvenido ${userExist.displayName}`);
+      .header({ 'x-token-fs': token, 'x-uid-fs': userUid })
+      .json(`bienvenido`);
   } catch (err: any) {
     next(new createError(404, err.message));
   }
 }
+/* 
+export async function logout(req: Request, res: Response, next: NextFunction) {
+  try {
+    const prueba = new Headers();
+
+    // prueba.delete('x-token-fs');
+    prueba.delete('x-uid-fs');
+  } catch (err: any) {
+    next(new createError(404, err.message));
+  }
+}
+ */

@@ -8,14 +8,20 @@ export async function isAuthenticate(
   next: NextFunction
 ) {
   try {
-    const authenticate: any = req.headers['auth'];
+    const isAuthenticate: any = req.headers['x-token-fs'];
+    const hasUidUser: any = req.headers['x-uid-fs'];
 
-    if (!authenticate)
+    if (!isAuthenticate)
       return next(new createError(403, 'usuario no autenticado'));
 
-    const isAuth = await dbAuth.verifyIdToken(authenticate);
+    const isAuth = await dbAuth.verifyIdToken(isAuthenticate);
 
     if (!isAuth) return next(new createError(404, 'no esta autorizado'));
+
+    if (!hasUidUser)
+      return next(new createError(404, 'no se pudo obtener el usuario'));
+
+    next();
   } catch (err: any) {
     next(new createError(0, err.message));
   }
