@@ -19,6 +19,7 @@ async function name() {
     '123456'
   );
 }
+cuent
 
 async function obtenerUser(email: string, password: string): Promise<string> {
   const user = await signInWithEmailAndPassword(dbAuth, email, password);
@@ -48,7 +49,3 @@ export async function uuiAndTokenUser(
   const metaUser = { uui, token };
   return metaUser;
 }
-uuiAndTokenUser(
-  'ana.garcia@example.com',
-  '$2a$10$/jTxFAo9y.HG7ZZHgBTJ9ed8yrcWjymNnvLsJZrRoIDw.xjxTywJu'
-);
