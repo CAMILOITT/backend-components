@@ -31,7 +31,7 @@ exports.exist = exist;
 function oneItem(snap) {
     let respuestas;
     snap.forEach(item => {
-        respuestas = Object.assign(Object.assign({}, item.data()), { id: item.id });
+        respuestas = item.data();
     });
     return respuestas;
 }
@@ -44,7 +44,7 @@ exports.oneItem = oneItem;
 function listItem(snap) {
     let respuestas = [];
     snap.forEach(item => {
-        respuestas.push(item.data());
+        respuestas.push(Object.assign(Object.assign({}, item.data()), { id: item.id }));
     });
     return respuestas;
 }

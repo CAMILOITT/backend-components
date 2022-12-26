@@ -1,11 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
 import { db, dbMessage } from '..';
 import { createError } from '../middleware/errorHandle';
-import { exist, listItem } from '../utils/firebase/object';
+import { exist, iterableObject, listItem } from '../utils/firebase/object';
 import { EOrientation, EState } from '../enum/optionNotification';
 import { IStructureTableNotification } from '../interfaces/dataNotification.interfaces';
 import { sendNow } from '../middleware/notification/notificationProgrammer';
-import { escape } from 'querystring';
 
 export async function getNotifications(
   req: Request,
@@ -45,7 +44,7 @@ export async function createNotifications(
       days,
     }: IStructureTableNotification = req.body;
 
-    console.log(title, body, imageUrl, orientation, state, time, days);
+    let token = req.headers['x-token-fs'];
 
     if (!title)
       return next(new createError(404, 'el campo title es obligatorio'));
@@ -60,12 +59,10 @@ export async function createNotifications(
       body,
       imageUrl,
       orientation: EOrientation[orientation || 'none'],
-      state: EState[state|| 'complete'],
+      state: EState[state || 'complete'],
       time: time || new Date(),
       days: days || '*',
     };
-
-    console.log(req.headers['x-uid-fs']);
 
     const notificationRef = db
       .collection('users')
@@ -75,9 +72,9 @@ export async function createNotifications(
 
     await notificationRef.set(dataNotification);
 
-    // if (dataNotification.state === EState['complete']) {
-    //   sendNow(dataNotification);
-    // }
+    if (dataNotification.state === EState['complete']) {
+      sendNow(token, dataNotification);
+    }
 
     res.status(200).json('notificación creada correctamente');
   } catch (err: any) {

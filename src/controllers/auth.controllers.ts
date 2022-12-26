@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
 import * as bcrypt from 'bcryptjs';
 import { createError } from '../middleware/errorHandle';
-import { db, dbAuth } from '..';
+import { db, dbAuth, dbMessage } from '..';
 import { IUser } from '../interfaces/dataNotification.interfaces';
+import { sendNow } from '../middleware/notification/notificationProgrammer';
 
 export async function register(
   req: Request,
@@ -18,7 +19,7 @@ export async function register(
     if (!email.includes('@') || !email.includes('.'))
       return next(new createError(404, 'correo no valido'));
 
-    if (password.length < 5)
+    if (password.length < 6)
       return next(new createError(404, 'la contraseña no es valida'));
 
     // const salt: string = await bcrypt.genSalt(10);
@@ -47,8 +48,13 @@ export async function login(req: Request, res: Response, next: NextFunction) {
   try {
     const { token, userUid } = req.body;
 
-    if (!token) return next(new createError(401, 'no esta autorizado'));
-    if (!userUid) return next(new createError(401, 'no esta autorizado'));
+    if (!token) return next(new createError(404, 'error al recibir el token'));
+
+    if (!userUid) return next(new createError(404, 'error recibir el uui'));
+
+    await dbMessage.subscribeToTopic(token, 'admin');
+
+    sendNow(token,{title:'asdfasdf',body:'asdfsadf'})
 
     return res
       .status(200)
@@ -58,15 +64,3 @@ export async function login(req: Request, res: Response, next: NextFunction) {
     next(new createError(404, err.message));
   }
 }
-/* 
-export async function logout(req: Request, res: Response, next: NextFunction) {
-  try {
-    const prueba = new Headers();
-
-    // prueba.delete('x-token-fs');
-    prueba.delete('x-uid-fs');
-  } catch (err: any) {
-    next(new createError(404, err.message));
-  }
-}
- */

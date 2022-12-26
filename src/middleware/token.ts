@@ -14,12 +14,12 @@ export async function isAuthenticate(
     if (!isAuthenticate)
       return next(new createError(403, 'usuario no autenticado'));
 
-    const isAuth = await dbAuth.verifyIdToken(isAuthenticate);
+    const isAuth = await dbAuth.verifyIdToken(isAuthenticate, true);
 
     if (!isAuth) return next(new createError(404, 'no esta autorizado'));
 
-    if (!hasUidUser)
-      return next(new createError(404, 'no se pudo obtener el usuario'));
+    if (!hasUidUser) return next(new createError(404, 'no esta autorizado'));
+
 
     next();
   } catch (err: any) {

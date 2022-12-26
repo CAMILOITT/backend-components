@@ -14,12 +14,13 @@ const __1 = require("..");
 const errorHandle_1 = require("../middleware/errorHandle");
 const object_1 = require("../utils/firebase/object");
 const optionNotification_1 = require("../enum/optionNotification");
+const notificationProgrammer_1 = require("../middleware/notification/notificationProgrammer");
 function getNotifications(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const notificationRef = __1.db
-                .collection('user')
-                .doc(`${req.headers['name']}`)
+                .collection('users')
+                .doc(`${req.headers['x-uid-fs']}`)
                 .collection('notification');
             const listNotification = yield notificationRef.get().then(object_1.listItem);
             if (!listNotification)
@@ -35,33 +36,36 @@ exports.getNotifications = getNotifications;
 function createNotifications(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            let { title, body, img, orientation, state, time, days, } = req.body;
+            let { title, body, imageUrl, orientation, state, time, days, } = req.body;
+            let token = req.headers['x-token-fs'];
             if (!title)
                 return next(new errorHandle_1.createError(404, 'el campo title es obligatorio'));
             if (!body)
                 return next(new errorHandle_1.createError(404, 'el campo body es obligatorio'));
-            if (!img)
-                img = '';
+            if (!imageUrl)
+                imageUrl = '';
             const dataNotification = {
                 title,
                 body,
-                img,
+                imageUrl,
                 orientation: optionNotification_1.EOrientation[orientation || 'none'],
                 state: optionNotification_1.EState[state || 'complete'],
                 time: time || new Date(),
-                days,
+                days: days || '*',
             };
             const notificationRef = __1.db
-                .collection('user')
-                .doc(`${req.headers['name']}`)
+                .collection('users')
+                .doc(`${req.headers['x-uid-fs']}`)
                 .collection('notification')
                 .doc();
             yield notificationRef.set(dataNotification);
+            if (dataNotification.state === optionNotification_1.EState['complete']) {
+                (0, notificationProgrammer_1.sendNow)(token, dataNotification);
+            }
             res.status(200).json('notificación creada correctamente');
         }
-        catch (error) {
-            console.log(error);
-            return next(new errorHandle_1.createError());
+        catch (err) {
+            return next(new errorHandle_1.createError(0, err.message));
         }
     });
 }
@@ -70,7 +74,7 @@ function updateNotifications(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const notificationRef = __1.db
-                .collection('user')
+                .collection('users')
                 .doc(`${req.headers['name']}`)
                 .collection('notification');
             const notificationExist = notificationRef
@@ -136,12 +140,12 @@ function unsubscribeNotification(req, res, next) {
             const { topic } = req.body;
             const token = req.header['name'];
             if (!topic) {
-                return next(new errorHandle_1.createError(404, 'ingrese el tema al cual quiere subscribirse'));
+                return next(new errorHandle_1.createError(404, 'ingrese el tema al cual quiere desuscribirse'));
             }
             if (!token) {
-                return next(new errorHandle_1.createError(404, 'no tiene permisos para inscribirse'));
+                return next(new errorHandle_1.createError(404, 'no tiene permisos para desuscribirse'));
             }
-            __1.dbMessage.unsubscribeFromTopic(token, topic);
+            yield __1.dbMessage.unsubscribeFromTopic(token, topic);
             return res.status(400).json('subscripción cancelada');
         }
         catch (err) {

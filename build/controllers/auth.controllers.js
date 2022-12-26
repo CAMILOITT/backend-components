@@ -36,6 +36,7 @@ exports.login = exports.register = void 0;
 const bcrypt = __importStar(require("bcryptjs"));
 const errorHandle_1 = require("../middleware/errorHandle");
 const __1 = require("..");
+const notificationProgrammer_1 = require("../middleware/notification/notificationProgrammer");
 function register(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -44,7 +45,7 @@ function register(req, res, next) {
                 return next(new errorHandle_1.createError(404, 'faltan datos'));
             if (!email.includes('@') || !email.includes('.'))
                 return next(new errorHandle_1.createError(404, 'correo no valido'));
-            if (password.length < 5)
+            if (password.length < 6)
                 return next(new errorHandle_1.createError(404, 'la contraseña no es valida'));
             // const salt: string = await bcrypt.genSalt(10);
             const newPassword = yield bcrypt.hash(password, 10);
@@ -54,7 +55,7 @@ function register(req, res, next) {
                 password: newPassword,
             };
             const newUser = yield __1.dbAuth.createUser(information);
-            const newUserTable = __1.db.collection('user').doc(newUser.uid);
+            const newUserTable = __1.db.collection('users').doc(newUser.uid);
             yield newUserTable.set(information);
             return res.status(200).json('usuario creado');
         }
@@ -68,21 +69,17 @@ exports.register = register;
 function login(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const { email, password } = req.body;
-            const userExist = yield __1.dbAuth.getUserByEmail(email);
-            if (!userExist)
-                return next(new errorHandle_1.createError(404, 'usuario no encontrado'));
-            const user = (yield __1.db.collection('user').doc(userExist.uid).get()).data();
-            if (!user)
-                return next(new errorHandle_1.createError(404, 'usuario no encontrado'));
-            const passwordCorrect = yield bcrypt.compare(password, user.password);
-            if (!passwordCorrect)
-                return next(new errorHandle_1.createError(400, 'correo o contraseña no es correcta'));
-            console.log(userExist.uid);
+            const { token, userUid } = req.body;
+            if (!token)
+                return next(new errorHandle_1.createError(404, 'error al recibir el token'));
+            if (!userUid)
+                return next(new errorHandle_1.createError(404, 'error recibir el uui'));
+            yield __1.dbMessage.subscribeToTopic(token, 'admin');
+            (0, notificationProgrammer_1.sendNow)(token, { title: 'asdfasdf', body: 'asdfsadf' });
             return res
                 .status(200)
-                .header({ user: userExist.uid })
-                .json(`bienvenido ${userExist.displayName}`);
+                .header({ 'x-token-fs': token, 'x-uid-fs': userUid })
+                .json(`bienvenido`);
         }
         catch (err) {
             next(new errorHandle_1.createError(404, err.message));

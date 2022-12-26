@@ -15,12 +15,16 @@ const errorHandle_1 = require("./errorHandle");
 function isAuthenticate(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const authenticate = req.headers['auth'];
-            if (!authenticate)
+            const isAuthenticate = req.headers['x-token-fs'];
+            const hasUidUser = req.headers['x-uid-fs'];
+            if (!isAuthenticate)
                 return next(new errorHandle_1.createError(403, 'usuario no autenticado'));
-            const isAuth = yield __1.dbAuth.verifyIdToken(authenticate);
+            const isAuth = yield __1.dbAuth.verifyIdToken(isAuthenticate, true);
             if (!isAuth)
                 return next(new errorHandle_1.createError(404, 'no esta autorizado'));
+            if (!hasUidUser)
+                return next(new errorHandle_1.createError(404, 'no esta autorizado'));
+            next();
         }
         catch (err) {
             next(new errorHandle_1.createError(0, err.message));

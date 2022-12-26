@@ -32,7 +32,7 @@ export function exist(snap: FirebaseFirestore.QuerySnapshot) {
 export function oneItem(snap: FirebaseFirestore.QuerySnapshot) {
   let respuestas;
   snap.forEach(item => {
-    respuestas = { ...item.data(), id: item.id };
+    respuestas = item.data();
   });
   return respuestas;
 }
@@ -46,7 +46,7 @@ export function oneItem(snap: FirebaseFirestore.QuerySnapshot) {
 export function listItem(snap: FirebaseFirestore.QuerySnapshot) {
   let respuestas: any[] = [];
   snap.forEach(item => {
-    respuestas.push(item.data());
+    respuestas.push({ ...item.data(), id: item.id });
   });
   return respuestas;
 }

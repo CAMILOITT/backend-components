@@ -1,18 +1,20 @@
 import cron from 'node-cron';
 import { sendMessage } from './sendNotification';
-import {  configurationNotification } from './configNotification';
+import { configurationNotification } from './configNotification';
 import { IStructureTableNotification } from '../../interfaces/dataNotification.interfaces';
 
-export function sendNow(dataTable: IStructureTableNotification) {
-  const configDevice = configurationNotification(dataTable);
-  const message = {
-    configDevice,
-  };
+export function sendNow(token: any, dataTable: any) {
+  const message = configurationNotification(token, dataTable);
+  // const message = {
+  //   configDevice: configDevice,
+  //   token
+  // };
+  console.log(message);
   sendMessage(message);
 }
 
-export function sendProgrammer(dataTable: IStructureTableNotification) {
-  const message = configurationNotification(dataTable);
+export function sendProgrammer(token: any, dataTable: any) {
+  const message = configurationNotification(token, dataTable);
 
   const dayMonth: number | string = dataTable.time.getDate() || '*';
   const dayWeek: number | string = dataTable.time.getDate() || '*';
@@ -24,8 +26,11 @@ export function sendProgrammer(dataTable: IStructureTableNotification) {
   });
 }
 
-export function sendRecurrent(dataTable: IStructureTableNotification) {
-  const message = configurationNotification(dataTable);
+export function sendRecurrent(
+  token: any,
+  dataTable: IStructureTableNotification
+) {
+  const message = configurationNotification(token, dataTable);
 
   const days = dataTable.days.join(',');
 

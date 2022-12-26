@@ -45,4 +45,3 @@ exports.environmentType = process.env.NODE_ENV === 'dev' ||
     process.env.NODE_ENV === 'production'
     ? config[process.env.NODE_ENV]
     : config.undefined;
-console.log(exports.environmentType);

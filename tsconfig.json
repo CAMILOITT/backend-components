@@ -1,5 +1,11 @@
 {
-  "exclude": ["node_modules", "src/test", "jest.config.ts", "prueba"],
+  "exclude": [
+    "node_modules",
+    "test",
+    "jest.config.ts",
+    "getDataFirestore",
+    "pruebas.ts"
+  ],
   "compilerOptions": {
     /* Visit https://aka.ms/tsconfig to read more about this file */
 
