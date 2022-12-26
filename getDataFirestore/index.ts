@@ -19,7 +19,6 @@ async function name() {
     '123456'
   );
 }
-cuent
 
 async function obtenerUser(email: string, password: string): Promise<string> {
   const user = await signInWithEmailAndPassword(dbAuth, email, password);
