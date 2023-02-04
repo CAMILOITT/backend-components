@@ -11,12 +11,52 @@
 
 ### lista de comandos
 
-  para iniciar el proyecto ejecutamos
-  ```
-    npm run dev
-  ```
+#### clonar repo
 
-## Thunder-Client
+```
+  git clone https://github.com/larnu-bootcamp/backend-components.git
+```
+
+#### instalar dependencias
+
+```
+  npm install
+```
+
+#### iniciar proyecto
+
+```
+  npm run dev
+```
+
+#### correr proyecto en producción
+
+```
+npm start
+```
+
+#### correr test
+
+```
+  npm test
+```
+
+#### formatear codigo
+
+```
+  npm run format
+```
+
+#### ver malas practicas
+```
+  npm eun lint
+```
+
+#### transpilar
+```
+ npm run build
+```
+
 
 ## Estructura de archivos
 
